@@ -29,7 +29,7 @@ async function ContactApi(req, res) {
   try {
     transporter.sendMail({
           from: `Spirenet`,
-          replyTo: process.env.CONTACT_FORM_RECEIVE_EMAIL,
+          replyTo: process.env.CONTACT_FORM_SENDER,
           to: email,
           subject: `Thanks For Joining`,
           template: "welcome",
