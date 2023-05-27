@@ -1,58 +1,39 @@
-import nodemailer from "nodemailer";
-import path from "path";
-import hbs from 'nodemailer-express-handlebars';
-import { MongoClient } from 'mongodb';
+import { Mongoconnect } from "../../utils/dbConnect";
+import waitlistModel from "../../model/waitlist";
+import sendEmail from "../../utils/sendEmail";
+import welcomeEmail from "../../templates/welcome";
 
-const handlebarOptions = {
-  viewEngine: {
-    extName: ".hbs",
-    partialsDir: path.resolve("../../templates/"),
-    defaultLayout: false,
-  },
-  viewPath: path.resolve("../../templates/"),
-  extName: ".hbs",
-};
+export default async function handler(req, res) {
+  await Mongoconnect();
 
-async function ContactApi(req, res) {
   const { email } = req.body;
 
-  const transporter = nodemailer.createTransport({
-    port: 587,
-    host: process.env.CONTACT_FORM_HOST,
-    auth: {
-      user: process.env.CONTACT_FORM_SEND_EMAIL,
-      pass: process.env.CONTACT_FORM_PASS,
-    },
-  });
-  transporter.use("compile", hbs(handlebarOptions));
+  if (!email || email === "") {
+    return res.status(200).send({ message: "Invalid email" });
+  }
 
   try {
-    transporter.sendMail({
-          from: process.env.CONTACT_FORM_SENDER,
-          replyTo: process.env.CONTACT_FORM_SENDER,
-          to: email,
-          subject: `Thanks For Joining`,
-          template: "welcome",
-      });
-  
-    // Save the email in MongoDB
-    const uri = process.env.MONGODB_URI;
-    const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-  
-    await client.connect();
-    const db = client.db("spire");
-    const collection = db.collection("waitlist");
-  
-    // Create a document and insert it into the collection
-    await collection.insertOne({ email });
-  
-    await client.close();
-  
-    res.status(200).json({ message: "success" });
-  } catch (err) {
-    res.status(500).json({ message: "an error occurred" });
-    console.log(err);
-  }  
-}
+    let oldUser = await waitlistModel.findOne({ email });
 
-export default ContactApi;
+    if (oldUser) {
+      console.log("old", oldUser);
+      return res.status(200).send({ message: "You are already waitlisted" });
+    }
+
+    let user = new waitlistModel({
+      email,
+    });
+
+    const emailTemplate = welcomeEmail;
+    const to = email;
+    const subject = "Welcome To Spirenet";
+    const html = emailTemplate;
+
+    await sendEmail(to, subject, html);
+
+    await user.save();
+    res.status(201).send({ message: "User added to waitlist successfully" });
+  } catch (err) {
+    res.send(err.message);
+  }
+}

@@ -17,6 +17,7 @@
     "framer-motion": "^10.9.1",
     "material-ui": "^0.15.0",
     "mongodb": "^5.5.0",
+    "mongoose": "^7.2.1",
     "next": "13.2.4",
     "nodemailer": "^6.9.2",
     "nodemailer-express-handlebars": "^6.1.0",
