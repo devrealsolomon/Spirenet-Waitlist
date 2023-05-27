@@ -1,4 +1,8 @@
 import mongoose from "mongoose";
+import dotenv from "dotenv";
+
+// Load environment variables from .env file
+dotenv.config();
 
 const Mongoconnect = async () => {
   try {
@@ -14,4 +18,3 @@ const Mongoconnect = async () => {
 };
 
 export default Mongoconnect;
-
