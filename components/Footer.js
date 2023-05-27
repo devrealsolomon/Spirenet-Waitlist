@@ -1,20 +1,35 @@
-import { config } from "../landing.config"
-import { useState } from "react"
+import { config } from "../landing.config";
+import { useState } from "react";
 import Link from "next/link";
 
 const Footer = () => {
-    const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState(false);
+  const [success, setSuccess] = useState(false);
 
-    const [error, setError] = useState(false);
-    const [success, setSuccess] = useState(false);
+  const subscribe = async (e) => {
+    e.preventDefault();
 
-    const subscribe = async (e) => {
-        e.preventDefault();
-        setError({
-            status: false,
-            message: 'This functionality is currently not available.'
-        })
+    try {
+      const response = await fetch("/api/welcome", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (response.ok) {
+        setSuccess(true);
+        setEmail("");
+      } else {
+        setError(true);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setError(true);
     }
+  };
 
     return (
         <footer className="bg-white">
@@ -22,8 +37,8 @@ const Footer = () => {
                 <div className="mx-auto max-w-screen-2xl px-4 md:px-8">
                     <div className="flex flex-col items-center justify-between gap-2 md:flex-row">
                         <div className="mb-3 text-center md:mb-0 md:text-left">
-                            <span className="font-bold uppercase tracking-widest text-gray-100">Newsletter</span>
-                            <p className="text-indigo-200">Subscribe to our newsletter</p>
+                            <span className="font-bold uppercase tracking-widest text-gray-100">Waitlist</span>
+                            <p className="text-indigo-200">Join our waitlist</p>
                         </div>
 
                         <form className="flex w-full gap-2 md:max-w-md" onSubmit={subscribe}>

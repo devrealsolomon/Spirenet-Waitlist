@@ -24,7 +24,7 @@ const handlebarOptions = {
         user: process.env.CONTACT_FORM_SEND_EMAIL,
         pass: process.env.CONTACT_FORM_PASS,
       },
-      tls: { rejectUnauthorized: false },
+      tls: { rejectUnauthorized: true },
     });
     transporter.use("compile", hbs(handlebarOptions));
   
