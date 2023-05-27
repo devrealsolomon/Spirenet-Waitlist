@@ -34,7 +34,7 @@ const getEmailService = () => {
       }
       return new EmailService({
         host: process.env.SMTP_HOST,
-        port: 465,
+        port: 587,
         auth: {
           user: username,
           pass: password,
