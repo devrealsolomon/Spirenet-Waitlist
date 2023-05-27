@@ -1,5 +1,5 @@
 import Mongoconnect from "../../utils/dbConnect";
-import waitlistModel from "../../model/waitlist";
+import Waitlist from "../../model/waitlist";
 import sendEmail from "../../utils/sendEmail";
 import welcomeEmail from "../../templates/welcome";
 
@@ -8,32 +8,41 @@ export default async function handler(req, res) {
 
   const { email } = req.body;
 
-  if (!email || email === "") {
-    return res.status(200).send({ message: "Invalid email" });
+  if (!email) {
+    res.status(400);
+    throw new Error("Please add your email");
+  }
+
+  if (email) {
+    let user = await Waitlist.findOne({ email });
+
+    if (user) {
+      res.status(400).json({
+        message: "You are already on our waitlist",
+        success: false,
+      });
+      return;
+    } else {
+      await Waitlist.create({
+        email,
+      });
+    }
   }
 
   try {
-    let oldUser = await waitlistModel.findOne({ email });
-
-    if (oldUser) {
-      console.log("old", oldUser);
-      return res.status(200).send({ message: "You are already waitlisted" });
-    }
-
-    let user = new waitlistModel({
-      email,
-    });
-
-    const emailTemplate = welcomeEmail;
+    const name = "Spirenetians";
+    const emailTemplate = welcomeEmail(name);
     const to = email;
-    const subject = "Welcome To Spirenet";
-    const html = emailTemplate;
+    const subject = "Thanks For Joining";
+    const html = emailTemplate.html;
 
     await sendEmail(to, subject, html);
-
-    await user.save();
-    res.status(201).send({ message: "User added to waitlist successfully" });
-  } catch (err) {
-    res.send(err.message);
+    console.log("Welcome Email sent!");
+    res.status(200).json({ success: true, message: "Waitlist Email Sent" });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ success: false, message: "Email not sent, please try again" });
   }
 }
