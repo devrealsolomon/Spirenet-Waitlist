@@ -85,7 +85,7 @@ const Footer = () => {
                                         <path d="M96 0V47L48 94H0V47L48 0H96Z" />
                                     </svg>
 
-                                    SynergySells
+                                    SpireNet
                                 </Link>
                             </div>
 
@@ -197,7 +197,7 @@ const Footer = () => {
                         </div>
                     </div>
 
-                    <div className="border-t py-8 text-center text-sm text-gray-400">© 2021 - Present SynergySells. All rights reserved.</div>
+                    <div className="border-t py-8 text-center text-sm text-gray-400">© 2023 - Present SpireNet. All rights reserved.</div>
                 </div>
             </div>
         </footer>
