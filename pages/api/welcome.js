@@ -1,4 +1,4 @@
-import { Mongoconnect } from "../../utils/dbConnect";
+import Mongoconnect from "../../utils/dbConnect";
 import waitlistModel from "../../model/waitlist";
 import sendEmail from "../../utils/sendEmail";
 import welcomeEmail from "../../templates/welcome";
