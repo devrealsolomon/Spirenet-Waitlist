@@ -17,7 +17,7 @@ const handlebarOptions = {
     const { email } = req.body;
   
     const transporter = nodemailer.createTransport({
-      port: 465,
+      port: 587,
       secure: true,
       host: process.env.CONTACT_FORM_HOST,
       auth: {
